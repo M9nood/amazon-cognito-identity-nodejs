@@ -31,3 +31,19 @@ Content-Type: application/json
 GET http://localhost:3000/users/me
 Content-Type: application/json
 authorization: Bearer {YOUR_ID_TOKEN}
+
+
+### Refresh Token
+POST http://localhost:3000/auth/tokens/refresh
+Content-Type: application/json
+
+{
+  "email": "{YOUR_EMAIL}",
+  "refreshToken" : "{YOUR_REFRESH_TOKEN}"
+}
+
+
+### Sign Out
+POST http://localhost:3000/auth/signout
+Content-Type: application/json
+authorization: Bearer {YOUR_ID_TOKEN}
