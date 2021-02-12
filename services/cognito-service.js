@@ -7,24 +7,26 @@ const poolData = {
 const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
 
 async function signIn (body, callback) {
-  var userName = body.email
-  var password = body.password
-  var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
+  let userName = body.email
+  let password = body.password
+  let authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
        Username: userName,
        Password: password
    });
-   var userData = {
+   let userData = {
        Username: userName,
        Pool: userPool
    }
-   var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
+   let cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
    await cognitoUser.authenticateUser(authenticationDetails, {
        onSuccess: function (result) {
           let idToken = result.getIdToken().getJwtToken()
+          let accessToken = result.getAccessToken().getJwtToken()
           let refreshToken = result.getRefreshToken().getToken()
           let user = result.getIdToken().payload
           callback({
             idToken : idToken,
+            accessToken : accessToken,
             refreshToken : refreshToken,
             email : user.email
           });
@@ -36,9 +38,9 @@ async function signIn (body, callback) {
 }
 
 function signUp(body, callback){
-  var attributeList = []
-  var userName = body.email
-  var password = body.password
+  let attributeList = []
+  let userName = body.email
+  let password = body.password
   
   attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute({Name:"custom:platform", Value:"FS"}));
 
@@ -54,14 +56,14 @@ function signUp(body, callback){
 }
 
 function confirmRegistration(body, callback){
-  var userName = body.email
-  var code = body.code
+  let userName = body.email
+  let code = body.code
   
-  var userData = {
+  let userData = {
       Username: userName,
       Pool: userPool
   }
-  var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
+  let cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
 
   cognitoUser.confirmRegistration(code, true, function(err, result) {
     if (err) callback(err)
@@ -72,8 +74,42 @@ function confirmRegistration(body, callback){
   })
 }
 
+function refreshToken(body, callback) {
+  let refreshToken = new AmazonCognitoIdentity.CognitoRefreshToken({RefreshToken: body.refreshToken});
+  let userName = body.email
+
+  const userData = {
+      Username: userName,
+      Pool: userPool
+  }
+
+  const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
+
+  cognitoUser.refreshSession(refreshToken, (err, session) => {
+      if (err) callback(err)
+      let user = session.getIdToken().payload
+      callback({
+        idToken : session.idToken.jwtToken,
+        accessToken : session.accessToken.jwtToken,
+        refreshToken : session.refreshToken.token,
+        email : user.email
+      })
+  })
+}
+
+function signOut(payload) {
+  const userData = {
+    Username: payload.email,
+    Pool: userPool
+  }
+  const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
+  cognitoUser.signOut()
+}
+
 module.exports = {
   signIn,
   signUp,
-  confirmRegistration
+  confirmRegistration,
+  refreshToken,
+  signOut
 }
