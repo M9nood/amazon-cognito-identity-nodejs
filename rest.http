@@ -1,0 +1,33 @@
+
+### Sign Up
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "email": "{YOUR_EMAIL}",
+  "password": "{YOUR_PASSWORD}"
+}
+
+### Verify code
+POST http://localhost:3000/auth/verify-code
+Content-Type: application/json
+
+{
+  "email": "{YOUR_EMAIL}",
+  "code": "{YOUR_VERIFY_CODE}"
+}
+
+### Sign In
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "email": "{YOUR_EMAIL}",
+  "password": "{YOUR_PASSWORD}"
+}
+
+
+### Get User
+GET http://localhost:3000/users/me
+Content-Type: application/json
+authorization: Bearer {YOUR_ID_TOKEN}

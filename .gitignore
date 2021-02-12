@@ -1,0 +1,6 @@
+/node_modules
+# Elastic Beanstalk Files
+/package-lock.json
+/yarn.lock
+/old-token.json
+/.env
