@@ -37,6 +37,9 @@ function validateToken(req, res, next){
                 throw new APIError('Unauthorized','Invalid token')
             }
 
+            console.log('token exp', decodedJwt.payload.exp)
+            console.log('current', (new Date().getTime() + 1) / 1000)
+
             jwt.verify(token, pem, function(err, payload) {
                 if(err) {
                     if(decodedJwt.payload.exp < (new Date().getTime() + 1) / 1000) throw new APIError('Unauthorized','Token expired')
