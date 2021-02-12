@@ -38,7 +38,7 @@ POST http://localhost:3000/auth/tokens/refresh
 Content-Type: application/json
 
 {
-  "email": "{YOUR_EMAIL}",,
+  "email": "{YOUR_EMAIL}",
   "refreshToken" : "{YOUR_REFRESH_TOKEN}"
 }
 
