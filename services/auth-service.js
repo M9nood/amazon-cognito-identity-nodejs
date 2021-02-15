@@ -1,6 +1,10 @@
 const { signIn, signUp, confirmRegistration, refreshToken, signOut } = require('./cognito-service')
 const APIError = require('../errors/api-error')
 const { getPayload } = require('../helpers/jwt')
+<<<<<<< HEAD
+=======
+const { registerUserService } = require('../services/user-service')
+>>>>>>> feat : refresh token and sign out
 
 async function signInService(request) {
   try {
@@ -27,12 +31,8 @@ async function signUpService(request) {
       const user = await new Promise((resolve, reject) => signUp(request , function(response){
         resolve(response)
       }))
-      return {
-        message : 'Registered.',
-        data : {
-          userName : user.userName
-        }
-      }
+      const userRegistered = await registerUserService(request)
+      return userRegistered
   } catch (error) {
       console.log('error signup', error)
       throw new APIError(error.name , error.message)
