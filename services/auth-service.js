@@ -1,16 +1,24 @@
 const { signIn, signUp, confirmRegistration, refreshToken, signOut } = require('./cognito-service')
 const APIError = require('../errors/api-error')
 const { getPayload } = require('../helpers/jwt')
-<<<<<<< HEAD
-=======
 const { registerUserService } = require('../services/user-service')
->>>>>>> feat : refresh token and sign out
+const { createUserSessionService } = require('../services/user-service')
+const SessionData = require('../data/session-data')
 
 async function signInService(request) {
   try {
       const user = await new Promise((resolve, reject) => signIn(request , function(response){
         resolve(response)
       }))
+      let userPayload = await getPayload(user.idToken)
+      let requestSession = {
+        id_token : user.idToken,
+        refresh_token : user.refreshToken,
+        email : user.email,
+        exp : userPayload.exp,
+        revoke_flag : 0
+      } 
+      let session = await createUserSessionService(requestSession)
       return {
         message : 'Authorized.',
         data : {
@@ -59,6 +67,16 @@ async function refreshTokenService(request) {
       const token = await new Promise((resolve, reject) => refreshToken(request , function(response){
         resolve(response)
       }))
+      SessionData.refreshTokenSession(request.refreshToken)
+      let userPayload = await getPayload(token.idToken)
+      let requestSession = {
+        id_token : token.idToken,
+        refresh_token : token.refreshToken,
+        email : token.email,
+        exp : userPayload.exp,
+        revoke_flag : 0
+      } 
+      let session = await createUserSessionService(requestSession)
       return {
         message : 'Refresh token.',
         data : token
