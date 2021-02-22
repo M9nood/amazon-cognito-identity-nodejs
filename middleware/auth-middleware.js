@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const request = require('request')
 const APIError = require('../errors/api-error')
 const { errorHandler } = require('../controllers/error-controller')
+const { revokeIdToken } = require('../data/session-data')
 
 function validateToken(req, res, next){
   var tokenArray = req.headers['authorization'].split(" ")
@@ -37,12 +38,12 @@ function validateToken(req, res, next){
                 throw new APIError('Unauthorized','Invalid token')
             }
 
-            console.log('token exp', decodedJwt.payload.exp)
-            console.log('current', (new Date().getTime() + 1) / 1000)
-
             jwt.verify(token, pem, function(err, payload) {
                 if(err) {
-                    if(decodedJwt.payload.exp < (new Date().getTime() + 1) / 1000) throw new APIError('Unauthorized','Token expired')
+                    if(decodedJwt.payload.exp < (new Date().getTime() + 1) / 1000) {
+                        revokeIdToken(token)
+                        throw new APIError('Unauthorized','Token expired')
+                    }
                     throw new APIError('Unauthorized','Invalid token')
                 } else {
                     next()
