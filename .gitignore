@@ -4,3 +4,5 @@
 /yarn.lock
 /old-token.json
 /.env
+/redis_data
+/redis_data/*

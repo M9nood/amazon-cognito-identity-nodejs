@@ -4,15 +4,20 @@ const request = require('request')
 const APIError = require('../errors/api-error')
 const { errorHandler } = require('../controllers/error-controller')
 const { revokeIdToken } = require('../data/session-data')
+const redis = require('../helpers/redis')
 
-function validateToken(req, res, next){
+async function validateToken(req, res, next){
   var tokenArray = req.headers['authorization'].split(" ")
   var token = tokenArray[1]
   request({
       url: `https://cognito-idp.${process.env.POOL_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}/.well-known/jwks.json`,
       json: true
-  }, function (error, response, body) {
+  }, async function (error, response, body) {
       try{
+        let value = await redis.get('idToken_'+token)
+        if(!value){
+           throw new APIError('Unauthorized','Invalid token')
+        }
         if (!error && response.statusCode === 200) {
             pems = {};
             var keys = body['keys'];
