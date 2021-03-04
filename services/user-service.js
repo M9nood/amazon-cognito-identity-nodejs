@@ -1,8 +1,8 @@
-require('../helpers/mongodb-connection')
 const APIError = require('../errors/api-error')
 const User = require('../models/user-model')
 const UserData = require('../data/user-data')
 const SessionData = require('../data/session-data')
+const redis = require('../helpers/redis')
 
 async function registerUserService(request){
   try {
@@ -27,6 +27,7 @@ async function registerUserService(request){
 async function createUserSessionService(request){
   try {
     let session = await SessionData.createSession(request).then(res => res.data)
+    redis.set('idToken_'+request.id_token, JSON.stringify(request))
     return {
       message : 'Created user session.',
       data : session
