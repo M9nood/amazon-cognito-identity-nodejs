@@ -1,4 +1,3 @@
-require('../helpers/mongodb-connection')
 const APIError = require('../errors/api-error')
 const User = require('../models/user-model')
 

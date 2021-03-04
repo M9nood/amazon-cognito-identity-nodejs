@@ -4,7 +4,7 @@ async function getUserHandler(request) {
   return {
     message : 'Get User',
     data : {
-      email : 'nattawoot@email.me'
+      email : 'nattawoot@email'
     }
   }
 }
