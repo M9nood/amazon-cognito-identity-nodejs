@@ -1,12 +1,7 @@
 version: '3'
 services:
-  server_redis_database:
+  redis_db:
     image: redis:latest
-    container_name: server_redis_database
-    env_file:
-      - .env
-    volumes:
-      - ./redis_data:/data
     restart: always
     expose:
       - "6379"
@@ -32,3 +27,6 @@ services:
       - .env
     ports:
       - "3000:3000"
+    links:
+      - redis_db
+      - mongo

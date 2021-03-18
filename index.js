@@ -3,6 +3,7 @@ const morgan = require('morgan')
 const createError = require('http-errors')
 require('dotenv').config()
 require('./helpers/mongodb-connection')
+require('./helpers/redis')
 
 const AuthRoute = require('./routes/auth')
 const UserRoute = require('./routes/user')
@@ -12,7 +13,9 @@ app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-app.get('/', async (req, res, next) => { res.send('Hello from express.') })
+app.get('/', async (req, res, next) => { 
+  res.send('Hello from express.') 
+})
 app.use('/auth', AuthRoute)
 app.use('/users', UserRoute)
 
